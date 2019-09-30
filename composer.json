@@ -14,6 +14,7 @@
         "symfony/yaml": "4.3.*"
     },
     "require-dev": {
+        "dama/doctrine-test-bundle": "^6.0",
         "symfony/maker-bundle": "^1.13",
         "symfony/phpunit-bridge": "^4.3"
     },
