@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Traits\Timestampable;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="episode")
@@ -26,6 +27,13 @@ class Episode
     private $id;
 
     /**
+     * @Assert\NotBlank
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 255,
+     *      minMessage = "The title must be at least {{ limit }} characters long",
+     *      maxMessage = "The title cannot be longer than {{ limit }} characters"
+     * )
      * @ORM\Column(type="string", length=255)
      */
     private $title;
@@ -36,17 +44,23 @@ class Episode
     private $description;
 
     /**
+     * @Assert\NotBlank
+     * @Assert\Positive
      * @ORM\Column(type="integer")
      */
     private $episodeNumber;
 
     /**
+     * @Assert\NotBlank
      * @ORM\ManyToOne(targetEntity="App\Entity\Podcast", inversedBy="episodes")
      * @ORM\JoinColumn(nullable=false)
      */
     private $podcast;
 
     /**
+     * @Assert\Url(
+     *    message = "The url '{{ value }}' is not a valid url",
+     * )
      * @ORM\Column(type="text", nullable=true)
      */
     private $downloadUrl;
