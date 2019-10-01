@@ -24,11 +24,9 @@ class EpisodeControllerTest extends JsonApiTestCase
 
     public function testViewInvalidId()
     {
-        $this->expectException(NotFoundHttpException::class);
         $this->client->request('GET', '/api/v1/episode/101');
         $response = $this->client->getResponse();
         $this->assertTrue($response->isNotFound());
-        $this->assertResponse($response, 'Api/v1/404');
     }
 
     public function testCreateMinimal()
@@ -85,11 +83,9 @@ class EpisodeControllerTest extends JsonApiTestCase
 
     public function testUpdateMissingEpisode()
     {
-        $this->expectException(NotFoundHttpException::class);
         $this->client->request('PUT', '/api/v1/episode/101/update');
         $response = $this->client->getResponse();
         $this->assertTrue($response->isNotFound());
-        $this->assertResponse($response, 'Api/v1/404');
     }
 
     public function testUpdateMissingFields()
@@ -134,11 +130,9 @@ class EpisodeControllerTest extends JsonApiTestCase
 
     public function testDeleteMissingEntity()
     {
-        $this->expectException(NotFoundHttpException::class);
         $this->client->request('DELETE', '/api/v1/episode/101/delete');
         $response = $this->client->getResponse();
         $this->assertTrue($response->isNotFound());
-        $this->assertResponse($response, 'Api/v1/404');
     }
 
     public function testDeleteValidEntity()
@@ -154,9 +148,41 @@ class EpisodeControllerTest extends JsonApiTestCase
         $this->assertResponse($response, 'Api/v1/Episode/delete_valid');
 
         // Get the Old Record and ensure it doesn't exist
-        $this->expectException(NotFoundHttpException::class);
         $this->client->request('GET', '/api/v1/episode/1');
         $response = $this->client->getResponse();
         $this->assertTrue($response->isNotFound());
-        $this->assertResponse($response, 'Api/v1/404');
-    }}
+    }
+
+    public function testIndexPaginationSingleItem()
+    {
+        $this->client->request('GET', '/api/v1/episode/?limit=1');
+        $response = $this->client->getResponse();
+
+        // Decode Response
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals(count($data['result']), 1);
+    }
+
+    public function testIndexPaginationMultipleItems()
+    {
+        $this->client->request('GET', '/api/v1/episode/?limit=3');
+        $response = $this->client->getResponse();
+
+        // Decode Response
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals(count($data['result']), 3);
+    }
+
+    public function testIndexPaginationSecondPage()
+    {
+        $this->client->request('GET', '/api/v1/episode/?limit=1&page=2');
+        $firstPageResponse = $this->client->getResponse();
+        $firstPageData = json_decode($firstPageResponse->getContent(), true);
+        $this->assertEquals(count($firstPageData['result']), 1);
+
+        $this->client->request('GET', '/api/v1/episode/?limit=1');
+        $secondPageResponse = $this->client->getResponse();
+        $secondPageData = json_decode($secondPageResponse->getContent(), true);
+        $this->assertNotEquals($secondPageData['result'], $firstPageData['result']);
+    }
+}
