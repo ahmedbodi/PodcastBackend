@@ -100,7 +100,7 @@ class EpisodeControllerTest extends JsonApiTestCase
         $this->client->request('PUT', '/api/v1/episode/1/update');
         $response = $this->client->getResponse();
         $this->assertResponse($response, 'Api/v1/Episode/update_blank_data');
-        $this->assertEquals($response, $old_response); // Nothing Should have changed
+        $this->assertEquals($response->getContent(), $old_response->getContent()); // Nothing Should have changed
     }
 
     public function testUpdateChangedTitle()
