@@ -15,6 +15,8 @@ class PodcastFixtures extends Fixture
         for ($i = 0; $i < 5; $i++) {
             $podcast = new Podcast();
             $podcast->setName("Sample Podcast $i");
+            $podcast->setCreatedAt(new \DateTime());
+            $podcast->setUpdatedAt(new \DateTime());
             $manager->persist($podcast);
         }
 

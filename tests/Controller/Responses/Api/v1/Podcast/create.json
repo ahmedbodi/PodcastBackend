@@ -1,0 +1,11 @@
+{
+  "success": @boolean@,
+  "result": {
+      "id": "@integer@.greaterThan(0)",
+      "name": "@string@",
+      "episodes": [
+      ],
+      "createdAt": "@string@.isDateTime()",
+      "updatedAt": "@string@.isDateTime()"
+    }
+}

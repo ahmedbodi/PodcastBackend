@@ -1,0 +1,61 @@
+{
+  "success": @boolean@,
+  "result": {
+      "id": "@integer@.greaterThan(0)",
+      "name": "Sample Name",
+      "episodes": [
+        {
+          "id": "@integer@.greaterThan(0)",
+          "title": "@string@",
+          "description": "@string@||@null@",
+          "episodeNumber": "@integer@.greaterThan(0)",
+          "podcast": "@integer@.greaterThan(0)",
+          "downloadUrl": "@string@.isUrl()||@null@",
+          "createdAt": "@string@.isDateTime()",
+          "updatedAt": "@string@.isDateTime()"
+        },
+        {
+          "id": "@integer@.greaterThan(0)",
+          "title": "@string@",
+          "description": "@string@||@null@",
+          "episodeNumber": "@integer@.greaterThan(0)",
+          "podcast": "@integer@.greaterThan(0)",
+          "downloadUrl": "@string@.isUrl()||@null@",
+          "createdAt": "@string@.isDateTime()",
+          "updatedAt": "@string@.isDateTime()"
+        },
+        {
+          "id": "@integer@.greaterThan(0)",
+          "title": "@string@",
+          "description": "@string@||@null@",
+          "episodeNumber": "@integer@.greaterThan(0)",
+          "podcast": "@integer@.greaterThan(0)",
+          "downloadUrl": "@string@.isUrl()||@null@",
+          "createdAt": "@string@.isDateTime()",
+          "updatedAt": "@string@.isDateTime()"
+        },
+        {
+          "id": "@integer@.greaterThan(0)",
+          "title": "@string@",
+          "description": "@string@||@null@",
+          "episodeNumber": "@integer@.greaterThan(0)",
+          "podcast": "@integer@.greaterThan(0)",
+          "downloadUrl": "@string@.isUrl()||@null@",
+          "createdAt": "@string@.isDateTime()",
+          "updatedAt": "@string@.isDateTime()"
+        },
+        {
+          "id": "@integer@.greaterThan(0)",
+          "title": "@string@",
+          "description": "@string@||@null@",
+          "episodeNumber": "@integer@.greaterThan(0)",
+          "podcast": "@integer@.greaterThan(0)",
+          "downloadUrl": "@string@.isUrl()||@null@",
+          "createdAt": "@string@.isDateTime()",
+          "updatedAt": "@string@.isDateTime()"
+        }
+      ],
+      "createdAt": "@string@.isDateTime()",
+      "updatedAt": "@string@.isDateTime()"
+    }
+}

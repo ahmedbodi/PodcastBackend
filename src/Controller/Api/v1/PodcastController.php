@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @Route("/api/v1/podcast")
@@ -17,46 +18,100 @@ use Symfony\Component\Routing\Annotation\Route;
 class PodcastController extends ApiController
 {
     /**
-     * @Route("/", name="podcast_index", methods={"GET"})
+     * @var SerializerInterface $serializer
      */
-    public function index(PodcastRepository $podcastRepository): Response
+    private $serializer;
+
+    /**
+     * Inject the Serializer so we can use it to get a consistent output
+     * @var SerializerInterface $serializer Serializer to convert entities to JSON
+     */
+    public function __construct(SerializerInterface $serializer)
     {
-        return $this->json([
-            'success' => true,
-            'result' => $podcastRepository->findAll(),
-        ]);
+        $this->serializer = $serializer;
     }
 
     /**
-     * @Route("/create", name="podcast_create", methods={"PUT"})
-     */
-    public function create(Request $request): Response
-    {
-        $podcast = new Podcast();
-        return $this->processForm($request, $podcast);
-    }
-
-    /**
+     * View an Individual Podcast as JSON
+     * @var Podcast $podcast Fetched via ID provided inside the URL
+     * @var SerializerInterface $serializer Serializer to convert entity to JSON (can be modified to support XML/CSV etc)
      * @Route("/{id}", name="podcast_view", methods={"GET"})
      */
-    public function view(Podcast $podcast): Response
+    public function view(Podcast $podcast, SerializerInterface $serializer): Response
     {
+        $result = $this->serialize($podcast);
         return $this->json([
             'success' => true,
-            'result' => $podcast,
+            'result' => $result,
+        ]);
+
+    }
+
+    /**
+     * View an Individual Podcast as JSON
+     * @var Podcast $podcast Fetched via ID provided inside the URL
+     * @var SerializerInterface $serializer Serializer to convert entity to JSON (can be modified to support XML/CSV etc)
+     * @Route("/", name="podcast_index", methods={"GET"})
+     */
+    public function index(PodcastRepository $podcastRepository, SerializerInterface $serializer): Response
+    {
+        $podcasts = $podcastRepository->findAll();
+        $result = $this->serialize($podcasts);
+        return $this->json([
+            'success' => true,
+            'result' => $result,
         ]);
     }
 
     /**
-     * @Route("/{id}/update", name="podcast_upda1te", methods={"POST"})
+     * Create a new Podcast and store it in the database
+     * @var Request $request HTTP PUT Request data
+     * @var SerializerInterface $serializer Serializer to convert entity to JSON (can be modified to support XML/CSV etc)
+     * @Route("/create", name="podcast_create", methods={"POST"})
      */
-    public function update(Request $request, Podcast $podcast): Response
+    public function create(Request $request, SerializerInterface $serializer): Response
     {
-        return $this->processForm($request, $podcast);
+        $podcast = new Podcast();
+        $errors = $this->validateForm($request, $podcast);
+        $output = ['success' => !$errors];
+
+        if (!$errors) {
+            $podcast = $this->processForm($request, $podcast);
+            $output['result'] = $this->serialize($podcast);
+        } else {
+            $output['errors'] = $errors;
+        }
+
+        return $this->json($output);
     }
 
     /**
-     * @Route("/{id}", name="podcast_delete", methods={"DELETE"})
+     * Update an existing podcast from the database
+     * @var Request $request HTTP PUT Request data
+     * @var Podcast $podcast Fetched via ID provided inside the URL
+     * @var SerializerInterface $serializer Serializer to convert entity to JSON (can be modified to support XML/CSV etc)
+     * @Route("/{id}/update", name="podcast_update", methods={"PUT"})
+     */
+    public function update(Request $request, Podcast $podcast, SerializerInterface $serializer): Response
+    {
+        $errors = $this->validateForm($request, $podcast);
+        $output = ['success' => !$errors];
+
+        if (!$errors) {
+            $podcast = $this->processForm($request, $podcast);
+            $output['result'] = $this->serialize($podcast);
+        } else {
+            $output['errors'] = $errors;
+        }
+
+        return $this->json($output);
+    }
+
+    /**
+     * Delete an existing podcast
+     * @var Request $request HTTP POST Request data
+     * @var Podcast $podcast Fetched via ID provided inside the URL
+     * @Route("/{id}/delete", name="podcast_delete", methods={"DELETE"})
      */
     public function delete(Request $request, Podcast $podcast): Response
     {
@@ -70,29 +125,66 @@ class PodcastController extends ApiController
         ]);
     }
 
-    public function processForm(Request $request, Podcast $podcast): Response
+    /**
+     * Should be used by all actions to ensure we get a consistent response
+     * @var entities array|Podcast Entities to serialize into an array
+     * @return array
+     */
+    protected function serialize($entities) : array
     {
-        $data = json_decode($request->getContent(), true);
+        $result = $this->serializer->normalize($entities, null, [
+            'circular_reference_handler' => function ($obj) {
+                return $obj->getId();
+            },
+            'groups' => [self::REST_SERIALIZER_ENTITY_GROUP, "episodes"] // We want to include it here but not in episode responses
+        ]);
+        return $result;
+    }
+
+    /**
+     * Validate a PUT/POST Request Sent by the user
+     * @var Request $request HTTP POST Request data
+     * @var Podcast $podcast Fetched via ID provided inside the URL
+     */
+    protected function validateForm(Request $request, Podcast $podcast): array
+    {
+        if ($request->headers->get('content-type') == 'application/json') {
+            $data = json_decode($request->getContent(), true);
+        } else {
+            $data = $request->request->all();
+        }
+        $form = $this->createForm(PodcastType::class, $podcast);
+        $clearMissing = $request->getMethod() == "POST";
+        $form->submit($data, $clearMissing);
+        return $this->getErrorsFromForm($form);
+
+    }
+
+    /**
+     * Process the POST/PUT Request against the provided podcast and return an updated copy
+     * @var Request $request HTTP POST Request data
+     * @var Podcast $podcast Fetched via ID provided inside the URL
+     */
+    protected function processForm(Request $request, Podcast $podcast): Podcast
+    {
+        if ($request->headers->get('content-type') == 'application/json') {
+            $data = json_decode($request->getContent(), true);
+        } else {
+            $data = $request->request->all();
+        }
+
+        if (!$data) {
+            // Dont waste a query on an empty update
+            return $podcast;
+        }
 
         $form = $this->createForm(PodcastType::class, $podcast);
-        $form->submit($data);
-
-        if (!$form->isValid()) {
-            $errors = $this->getErrorsFromForm($form);
-
-            return new JsonResponse([
-                'success' => false,
-                'errors' => $errors,
-            ], 400);
-        }
+        $clearMissing = $request->getMethod() == "POST";
+        $form->submit($data, $clearMissing);
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($podcast);
         $entityManager->flush();
-
-        return $this->json([
-            'success' => true,
-            'result' => $podcast,
-        ]);
+        return $podcast;
     }
 }
