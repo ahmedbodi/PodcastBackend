@@ -10,7 +10,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * @ORM\Table(name="podcast")
  * @ORM\Entity(repositoryClass="App\Repository\PodcastRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class Podcast
 {
@@ -42,6 +44,7 @@ class Podcast
     private $name;
 
     /**
+     * @Groups({"episodes"})
      * @ORM\OneToMany(targetEntity="App\Entity\Episode", mappedBy="podcast", orphanRemoval=true)
      */
     private $episodes;
