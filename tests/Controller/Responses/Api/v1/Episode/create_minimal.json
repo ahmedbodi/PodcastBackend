@@ -1,0 +1,18 @@
+{
+  "success": @boolean@,
+  "result": {
+      "id": "@integer@.greaterThan(0)",
+      "title": "@string@",
+      "description": "@string@||@null@",
+      "episodeNumber": "@integer@.greaterThan(0)",
+      "podcast": {
+        "id": "@integer@.greaterThan(0)",
+        "name": "@string@",
+        "createdAt": "@string@.isDateTime()",
+        "updatedAt": "@string@.isDateTime()"
+      },
+      "downloadUrl": "@string@.isUrl()||@null@",
+      "createdAt": "@string@.isDateTime()",
+      "updatedAt": "@string@.isDateTime()"
+  }
+}

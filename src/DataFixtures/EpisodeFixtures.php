@@ -4,9 +4,10 @@ namespace App\DataFixtures;
 
 use App\Entity\Episode;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
-class EpisodeFixtures extends Fixture
+class EpisodeFixtures extends Fixture  implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager)
     {
@@ -18,8 +19,17 @@ class EpisodeFixtures extends Fixture
             $episode->setEpisodeNumber($i + 1); // +1 because numbers dont really start at 0 do they?
             $episode->setDownloadUrl("https://localhost/files/episode/$i"); // Sample URL. IRL we'd use a slug
             $episode->setPodcast($this->getReference(PodcastFixtures::SAMPLE_PODCAST_REFERENCE)); // Set Podcast Relation
+            $episode->setCreatedAt(new \DateTime());
+            $episode->setUpdatedAt(new \DateTime());
             $manager->persist($episode);
         }
         $manager->flush();
+    }
+
+    public function getDependencies()
+    {
+        return array(
+            PodcastFixtures::class,
+        );
     }
 }

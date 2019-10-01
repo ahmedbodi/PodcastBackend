@@ -1,0 +1,14 @@
+{
+  "success": @boolean@,
+  "errors": {
+    "title": [
+      "@string@"
+    ],
+    "episodeNumber": [
+      "@string@"
+    ],
+    "podcast": [
+      "@string@"
+    ]
+  }
+}
