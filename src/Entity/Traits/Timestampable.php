@@ -2,6 +2,7 @@
 namespace App\Entity\Traits;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Adds created at and updated at timestamps to entities.
@@ -14,6 +15,7 @@ trait Timestampable
     /**
      * @var \DateTime
      *
+     * @Groups({"rest"})
      * @ORM\Column(name="created_at", type="datetime")
      */
     private $createdAt;
@@ -21,6 +23,7 @@ trait Timestampable
     /**
      * @var \DateTime
      *
+     * @Groups({"rest"})
      * @ORM\Column(name="updated_at", type="datetime")
      */
     private $updatedAt;

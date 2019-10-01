@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Traits\Timestampable;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -20,6 +21,7 @@ class Episode
     use Timestampable;
 
     /**
+     * @Groups({"rest"})
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -34,11 +36,13 @@ class Episode
      *      minMessage = "The title must be at least {{ limit }} characters long",
      *      maxMessage = "The title cannot be longer than {{ limit }} characters"
      * )
+     * @Groups({"rest"})
      * @ORM\Column(type="string", length=255)
      */
     private $title;
 
     /**
+     * @Groups({"rest"})
      * @ORM\Column(type="text", nullable=true)
      */
     private $description;
@@ -46,12 +50,14 @@ class Episode
     /**
      * @Assert\NotBlank
      * @Assert\Positive
+     * @Groups({"rest"})
      * @ORM\Column(type="integer")
      */
     private $episodeNumber;
 
     /**
      * @Assert\NotBlank
+     * @Groups({"rest"})
      * @ORM\ManyToOne(targetEntity="App\Entity\Podcast", inversedBy="episodes")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -61,6 +67,7 @@ class Episode
      * @Assert\Url(
      *    message = "The url '{{ value }}' is not a valid url",
      * )
+     * @Groups({"rest"})
      * @ORM\Column(type="text", nullable=true)
      */
     private $downloadUrl;

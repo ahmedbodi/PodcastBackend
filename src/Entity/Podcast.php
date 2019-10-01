@@ -6,6 +6,7 @@ use App\Entity\Traits\Timestampable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -20,6 +21,7 @@ class Podcast
     use Timestampable;
 
     /**
+     * @Groups({"rest"})
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -27,6 +29,7 @@ class Podcast
     private $id;
 
     /**
+     * @Groups({"rest"})
      * @Assert\NotBlank
      * @Assert\Length(
      *      min = 2,

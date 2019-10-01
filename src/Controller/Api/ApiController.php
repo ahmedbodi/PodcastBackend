@@ -10,6 +10,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 abstract class ApiController extends AbstractController
 {
+    protected const REST_SERIALIZER_ENTITY_GROUP = 'rest';
+
     protected function getErrorsFromForm(FormInterface $form) : array
     {
         $errors = array();
