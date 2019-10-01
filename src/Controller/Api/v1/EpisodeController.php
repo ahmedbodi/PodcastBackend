@@ -7,6 +7,7 @@ use App\Entity\Episode;
 use App\Form\EpisodeType;
 use App\Repository\EpisodeRepository;
 use Knp\Component\Pager\PaginatorInterface;
+use League\Flysystem\FilesystemInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,15 +29,22 @@ class EpisodeController extends ApiController
      */
     private $paginator;
 
+    /*
+     * @var FilesystemInterface $defaultStorage Flysystem Storage Service
+     */
+    private $defaultStorage;
+
     /**
      * Inject the Serializer so we can use it to get a consistent output
      * @var SerializerInterface $serializer Serializer to convert entities to JSON
      * @var PaginatorInterface $paginator Paginator to limit results
+     * @var FilesystemInterface $defaultStorage Flysystem Storage Service
      */
-    public function __construct(SerializerInterface $serializer, PaginatorInterface $paginator)
+    public function __construct(SerializerInterface $serializer, PaginatorInterface $paginator, FilesystemInterface $defaultStorage)
     {
         $this->serializer = $serializer;
         $this->paginator = $paginator;
+        $this->filesystem = $defaultStorage;
     }
 
     /**
@@ -123,6 +131,52 @@ class EpisodeController extends ApiController
     }
 
     /**
+     * Update an existing episode from the database with the file passed in the request
+     * @var Request $request HTTP PUT Request data
+     * @var Episode $episode Fetched via ID provided inside the URL
+     * @Route("/{id}/upload", name="episode_upload", methods={"POST"})
+     */
+    public function uploadFile(Request $request, Episode $episode): Response
+    {
+        $file = $request->files->get('file');
+
+        if (!$file) {
+            return $this->json([
+                'success' => false,
+                'errors' => ['Invalid File'],
+            ]);
+        }
+
+        $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        // this is needed to safely include the file name as part of the URL
+        $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
+        $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+
+        $stream = fopen($file->getRealPath(), 'r+');
+        $success = $this->filesystem->writeStream('episodes/'.$newFilename, $stream);
+        fclose($stream);
+
+        // Get the File Path
+        $url = $this->filesystem->getAdapter()->getClient()->getObjectUrl(
+            $this->filesystem->getAdapter()->getBucket(),
+            'episodes/' . $newFilename
+        );
+
+        // Update the Episode
+        $episode->setDownloadUrl($url);
+
+        // Save the Entity
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($episode);
+        $entityManager->flush();
+
+        return $this->json([
+            'success' => $success,
+            'result' => $this->serialize($episode),
+        ]);
+    }
+
+    /**
      * Delete an existing episode
      * @var Request $request HTTP POST Request data
      * @var Episode $episode Fetched via ID provided inside the URL
@@ -168,6 +222,7 @@ class EpisodeController extends ApiController
         } else {
             $data = $request->request->all();
         }
+        var_dump($request->headers->get('content-type'));
         $form = $this->createForm(EpisodeType::class, $episode);
         $clearMissing = $request->getMethod() == "POST";
         $form->submit($data, $clearMissing);
