@@ -13,6 +13,14 @@
         "updatedAt": "@string@.isDateTime()"
       },
       "downloadUrl": "@string@.isUrl()||@null@",
+      "trackLength": "@integer@.greaterThan(0)||@null@",
+      "bitRate": "@integer@.greaterThan(0)||@null@",
+      "sampleRate": "@integer@.greaterThan(0)||@null@",
+      "channels": "@integer@.greaterThan(0)||@null@",
+      "isVariableBitRate": "@boolean@||@null@",
+      "isLossless": "@boolean@||@null@",
+      "mimeType": "@string@||@null@",
+      "fileSize": "@integer@.greaterThan(0)||@null@",
       "createdAt": "@string@.isDateTime()",
       "updatedAt": "@string@.isDateTime()"
     },
@@ -28,6 +36,14 @@
         "updatedAt": "@string@.isDateTime()"
       },
       "downloadUrl": "@string@.isUrl()||@null@",
+      "trackLength": "@integer@.greaterThan(0)||@null@",
+      "bitRate": "@integer@.greaterThan(0)||@null@",
+      "sampleRate": "@integer@.greaterThan(0)||@null@",
+      "channels": "@integer@.greaterThan(0)||@null@",
+      "isVariableBitRate": "@boolean@||@null@",
+      "isLossless": "@boolean@||@null@",
+      "mimeType": "@string@||@null@",
+      "fileSize": "@integer@.greaterThan(0)||@null@",
       "createdAt": "@string@.isDateTime()",
       "updatedAt": "@string@.isDateTime()"
     },
@@ -43,6 +59,14 @@
         "updatedAt": "@string@.isDateTime()"
       },
       "downloadUrl": "@string@.isUrl()||@null@",
+      "trackLength": "@integer@.greaterThan(0)||@null@",
+      "bitRate": "@integer@.greaterThan(0)||@null@",
+      "sampleRate": "@integer@.greaterThan(0)||@null@",
+      "channels": "@integer@.greaterThan(0)||@null@",
+      "isVariableBitRate": "@boolean@||@null@",
+      "isLossless": "@boolean@||@null@",
+      "mimeType": "@string@||@null@",
+      "fileSize": "@integer@.greaterThan(0)||@null@",
       "createdAt": "@string@.isDateTime()",
       "updatedAt": "@string@.isDateTime()"
     },
@@ -58,6 +82,14 @@
         "updatedAt": "@string@.isDateTime()"
       },
       "downloadUrl": "@string@.isUrl()||@null@",
+      "trackLength": "@integer@.greaterThan(0)||@null@",
+      "bitRate": "@integer@.greaterThan(0)||@null@",
+      "sampleRate": "@integer@.greaterThan(0)||@null@",
+      "channels": "@integer@.greaterThan(0)||@null@",
+      "isVariableBitRate": "@boolean@||@null@",
+      "isLossless": "@boolean@||@null@",
+      "mimeType": "@string@||@null@",
+      "fileSize": "@integer@.greaterThan(0)||@null@",
       "createdAt": "@string@.isDateTime()",
       "updatedAt": "@string@.isDateTime()"
     },
@@ -73,6 +105,14 @@
         "updatedAt": "@string@.isDateTime()"
       },
       "downloadUrl": "@string@.isUrl()||@null@",
+      "trackLength": "@integer@.greaterThan(0)||@null@",
+      "bitRate": "@integer@.greaterThan(0)||@null@",
+      "sampleRate": "@integer@.greaterThan(0)||@null@",
+      "channels": "@integer@.greaterThan(0)||@null@",
+      "isVariableBitRate": "@boolean@||@null@",
+      "isLossless": "@boolean@||@null@",
+      "mimeType": "@string@||@null@",
+      "fileSize": "@integer@.greaterThan(0)||@null@",
       "createdAt": "@string@.isDateTime()",
       "updatedAt": "@string@.isDateTime()"
     }

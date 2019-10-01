@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use wapmorgan\MediaFile\MediaFile;
 
 /**
  * @Route("/api/v1/episode")
@@ -147,23 +148,50 @@ class EpisodeController extends ApiController
             ]);
         }
 
+        if ($this->filesystem->has($episode->getFilename())) {
+            // Move it to the backups just incase.
+            $newName = str_replace("episodes/", "backups/", $episode->getFilename());
+            $this->filesystem->rename($episode->getFilename(), $newName);
+        }
+
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         // this is needed to safely include the file name as part of the URL
         $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
         $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
 
+        // Upload to S3
         $stream = fopen($file->getRealPath(), 'r+');
-        $success = $this->filesystem->writeStream('episodes/'.$newFilename, $stream);
+        $filename = "episodes/" . $newFilename;
+        $success = $this->filesystem->writeStream($filename, $stream);
         fclose($stream);
 
         // Get the File Path
         $url = $this->filesystem->getAdapter()->getClient()->getObjectUrl(
             $this->filesystem->getAdapter()->getBucket(),
-            'episodes/' . $newFilename
+            $filename
         );
 
+        try {
+            $media = MediaFile::open($file->getRealPath());
+            $audioAdapter = $media->getAudio();
+
+            // Get Metadata
+            $episode->setTrackLength($audioAdapter->getLength());
+            $episode->setBitRate($audioAdapter->getBitRate());
+            $episode->setSampleRate($audioAdapter->getSampleRate());
+            $episode->setChannels($audioAdapter->getChannels());
+            $episode->setIsVariableBitRate($audioAdapter->isVariableBitRate());
+            $episode->setIsLossless($audioAdapter->isLossless());
+        } catch (\Exception $exc) {
+            // We could raise an error here. but the library we're using just might not support the audio type.
+            // So we'll avoid saving any metadata for now
+        }
+
         // Update the Episode
+        $episode->setFilename($filename);
         $episode->setDownloadUrl($url);
+        $episode->setMimeType($this->filesystem->getMimetype($filename));
+        $episode->setFileSize($this->filesystem->getSize($filename));
 
         // Save the Entity
         $entityManager = $this->getDoctrine()->getManager();
@@ -184,6 +212,12 @@ class EpisodeController extends ApiController
      */
     public function delete(Request $request, Episode $episode): Response
     {
+        if ($this->filesystem->has($episode->getFilename())) {
+            // Move it to the backups just incase.
+            $newName = str_replace("episodes/", "backups/", $episode->getFilename());
+            $this->filesystem->rename($episode->getFilename(), $newName);
+        }
+
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->remove($episode);
         $entityManager->flush();
@@ -222,7 +256,6 @@ class EpisodeController extends ApiController
         } else {
             $data = $request->request->all();
         }
-        var_dump($request->headers->get('content-type'));
         $form = $this->createForm(EpisodeType::class, $episode);
         $clearMissing = $request->getMethod() == "POST";
         $form->submit($data, $clearMissing);

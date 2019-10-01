@@ -72,6 +72,59 @@ class Episode
      */
     private $downloadUrl;
 
+    /**
+     * @Groups({"rest"})
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $trackLength;
+
+    /**
+     * @Groups({"rest"})
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $bitRate;
+
+    /**
+     * @Groups({"rest"})
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $sampleRate;
+
+    /**
+     * @Groups({"rest"})
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $channels;
+
+    /**
+     * @Groups({"rest"})
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isVariableBitRate;
+
+    /**
+     * @Groups({"rest"})
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isLossless;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $filename;
+
+    /**
+     * @Groups({"rest"})
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $mimeType;
+
+    /**
+     * @Groups({"rest"})
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $fileSize;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -133,6 +186,114 @@ class Episode
     public function setDownloadUrl(?string $downloadUrl): self
     {
         $this->downloadUrl = $downloadUrl;
+
+        return $this;
+    }
+
+    public function getTrackLength(): ?int
+    {
+        return $this->trackLength;
+    }
+
+    public function setTrackLength(?int $trackLength): self
+    {
+        $this->trackLength = $trackLength;
+
+        return $this;
+    }
+
+    public function getBitRate(): ?int
+    {
+        return $this->bitRate;
+    }
+
+    public function setBitRate(?int $bitRate): self
+    {
+        $this->bitRate = $bitRate;
+
+        return $this;
+    }
+
+    public function getSampleRate(): ?int
+    {
+        return $this->sampleRate;
+    }
+
+    public function setSampleRate(?int $sampleRate): self
+    {
+        $this->sampleRate = $sampleRate;
+
+        return $this;
+    }
+
+    public function getChannels(): ?int
+    {
+        return $this->channels;
+    }
+
+    public function setChannels(?int $channels): self
+    {
+        $this->channels = $channels;
+
+        return $this;
+    }
+
+    public function getIsVariableBitRate(): ?bool
+    {
+        return $this->isVariableBitRate;
+    }
+
+    public function setIsVariableBitRate(?bool $isVariableBitRate): self
+    {
+        $this->isVariableBitRate = $isVariableBitRate;
+
+        return $this;
+    }
+
+    public function getIsLossless(): ?bool
+    {
+        return $this->isLossless;
+    }
+
+    public function setIsLossless(?bool $isLossless): self
+    {
+        $this->isLossless = $isLossless;
+
+        return $this;
+    }
+
+    public function getFilename(): ?string
+    {
+        return $this->filename;
+    }
+
+    public function setFilename(?string $filename): self
+    {
+        $this->filename = $filename;
+
+        return $this;
+    }
+
+    public function getMimeType(): ?string
+    {
+        return $this->mimeType;
+    }
+
+    public function setMimeType(?string $mimeType): self
+    {
+        $this->mimeType = $mimeType;
+
+        return $this;
+    }
+
+    public function getFileSize(): ?int
+    {
+        return $this->fileSize;
+    }
+
+    public function setFileSize(int $fileSize): self
+    {
+        $this->fileSize = $fileSize;
 
         return $this;
     }
