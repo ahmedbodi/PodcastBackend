@@ -6,6 +6,7 @@ use App\Controller\Api\ApiController;
 use App\Entity\Episode;
 use App\Form\EpisodeType;
 use App\Repository\EpisodeRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,12 +24,19 @@ class EpisodeController extends ApiController
     private $serializer;
 
     /**
+     * @var PaginatorInterface $paginator
+     */
+    private $paginator;
+
+    /**
      * Inject the Serializer so we can use it to get a consistent output
      * @var SerializerInterface $serializer Serializer to convert entities to JSON
+     * @var PaginatorInterface $paginator Paginator to limit results
      */
-    public function __construct(SerializerInterface $serializer)
+    public function __construct(SerializerInterface $serializer, PaginatorInterface $paginator)
     {
         $this->serializer = $serializer;
+        $this->paginator = $paginator;
     }
 
     /**
@@ -51,12 +59,19 @@ class EpisodeController extends ApiController
      * View an Individual Episode as JSON
      * @var Episode $episode Fetched via ID provided inside the URL
      * @var SerializerInterface $serializer Serializer to convert entity to JSON (can be modified to support XML/CSV etc)
+     * @var Request $request HTTP Request data
      * @Route("/", name="episode_index", methods={"GET"})
      */
-    public function index(EpisodeRepository $episodeRepository, SerializerInterface $serializer): Response
+    public function index(EpisodeRepository $episodeRepository, SerializerInterface $serializer, Request $request): Response
     {
-        $episodes = $episodeRepository->findAll();
-        $result = $this->serialize($episodes);
+        $query = $episodeRepository->createQueryBuilder('e');
+        $paginatedResults = $this->paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            $request->query->getInt('limit', 10)
+        );
+
+        $result = $this->serialize($paginatedResults);
         return $this->json([
             'success' => true,
             'result' => $result,
