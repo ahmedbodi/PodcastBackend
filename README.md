@@ -1,4 +1,5 @@
 ### Podcast Backend Task
+[![Build Status](https://travis-ci.org/ahmedbodi/PodcastBackend.svg?branch=master)](https://travis-ci.org/ahmedbodi/PodcastBackend)
 
 ## Design Decisions
 In a large scale scenario, You'd want to have multiple different qualities of an audio file so the Episodes entity would have a relationship to a MediaFile entity.
