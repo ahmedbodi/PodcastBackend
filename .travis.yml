@@ -4,9 +4,6 @@ sudo: false
 services:
   - postgresql
 
-addons:
-  postgresql: "11.2"
-
 cache:
   directories:
     - $HOME/.composer/cache/files
@@ -25,23 +22,11 @@ matrix:
     - php: 7.3
     - php: 7.4
 
-before_install:
-  - sudo apt-get update
-  - sudo apt-get --yes remove postgresql\*
-  - sudo apt-get install -y postgresql-11 postgresql-client-11
-  - sudo cp /etc/postgresql/{9.6,11}/main/pg_hba.conf
-  - sudo service postgresql restart 11  
-  - composer self-update
-
 install:
-  - composer install --dev
+  - composer install
 
 before_script:
-  - psql --version
-  - psql -c 'CREATE DATABASE test;' -U postgres
   - cp .env.test .env
-  - ./bin/console doctrine:schema:create
-  - ./bin/console doctrine:fixtures:load
 
 script:
   - ./vendor/bin/simple-phpunit $PHPUNIT_FLAGS
