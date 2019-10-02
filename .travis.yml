@@ -39,7 +39,6 @@ install:
 before_script:
   - psql --version
   - psql -c 'CREATE DATABASE test;' -U postgres
-  - psql -c 'CREATE ROLE travis SUPERUSER LOGIN CREATEDB;' -U postgres
   - cp .env.test .env
   - ./bin/console doctrine:schema:create
   - ./bin/console doctrine:fixtures:load
