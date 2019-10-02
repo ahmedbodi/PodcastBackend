@@ -1,0 +1,31 @@
+language: php
+sudo: false
+
+services:
+  - postgresql
+
+cache:
+  directories:
+    - $HOME/.composer/cache/files
+    - $HOME/symfony-bridge/.phpunit
+
+env:
+  global:
+    - PHPUNIT_FLAGS="-v"
+    - SYMFONY_PHPUNIT_DIR="$HOME/symfony-bridge/.phpunit"
+    - SYMFONY_DEPRECATIONS_HELPER=29
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 7.2
+    - php: 7.3
+
+install:
+  - composer install
+
+before_script:
+  - cp .env.test .env
+
+script:
+  - ./vendor/bin/simple-phpunit $PHPUNIT_FLAGS
