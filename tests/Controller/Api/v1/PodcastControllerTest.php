@@ -17,7 +17,7 @@ class PodcastControllerTest extends JsonApiTestCase
 
     public function testView()
     {
-        $this->client->request('GET', '/api/v1/podcast/24');
+        $this->client->request('GET', '/api/v1/podcast/6');
         $response = $this->client->getResponse();
         $this->assertResponse($response, 'Api/v1/Podcast/view');
     }
@@ -69,10 +69,10 @@ class PodcastControllerTest extends JsonApiTestCase
 
     public function testUpdateMissingFields()
     {
-        $this->client->request('GET', '/api/v1/podcast/24');
+        $this->client->request('GET', '/api/v1/podcast/6');
         $old_response = $this->client->getResponse();
 
-        $this->client->request('PUT', '/api/v1/podcast/24/update');
+        $this->client->request('PUT', '/api/v1/podcast/6/update');
         $response = $this->client->getResponse();
         $this->assertResponse($response, 'Api/v1/Podcast/update_blank_data');
         $this->assertEquals($response->getContent(), $old_response->getContent()); // Nothing Should have changed
@@ -80,14 +80,14 @@ class PodcastControllerTest extends JsonApiTestCase
 
     public function testUpdateChangedName()
     {
-        $this->client->request('GET', '/api/v1/podcast/24');
+        $this->client->request('GET', '/api/v1/podcast/6');
         $old_response = $this->client->getResponse();
         $old_entity_data = json_decode($old_response->getContent(), true);
 
         $changes = [
             'name' => 'Sample Name',
         ];
-        $this->client->request('PUT', '/api/v1/podcast/24/update', $changes);
+        $this->client->request('PUT', '/api/v1/podcast/6/update', $changes);
         $response = $this->client->getResponse();
         $this->assertResponse($response, 'Api/v1/Podcast/update_name');
         $this->assertNotEquals($response, $old_response); // Name Should Have Changed
@@ -117,17 +117,17 @@ class PodcastControllerTest extends JsonApiTestCase
     public function testDeleteValidEntity()
     {
         // Get the Old Record
-        $this->client->request('GET', '/api/v1/podcast/24');
+        $this->client->request('GET', '/api/v1/podcast/6');
         $old_response = $this->client->getResponse();
         $old_entity_data = json_decode($old_response->getContent(), true);
 
         // Make the Delete Request
-        $this->client->request('DELETE', '/api/v1/podcast/24/delete');
+        $this->client->request('DELETE', '/api/v1/podcast/6/delete');
         $response = $this->client->getResponse();
         $this->assertResponse($response, 'Api/v1/Podcast/delete_valid');
 
         // Get the Old Record and ensure it doesn't exist
-        $this->client->request('GET', '/api/v1/podcast/24');
+        $this->client->request('GET', '/api/v1/podcast/6');
         $response = $this->client->getResponse();
         $this->assertTrue($response->isNotFound());
     }
