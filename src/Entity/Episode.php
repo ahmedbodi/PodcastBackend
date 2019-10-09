@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Entity\Traits\Timestampable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -124,6 +126,16 @@ class Episode
      * @ORM\Column(type="integer", nullable=true)
      */
     private $fileSize;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\EpisodeDownloaded", mappedBy="episode", orphanRemoval=true)
+     */
+    private $episodeDownloads;
+
+    public function __construct()
+    {
+        $this->episodeDownloads = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -294,6 +306,37 @@ class Episode
     public function setFileSize(int $fileSize): self
     {
         $this->fileSize = $fileSize;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|EpisodeDownloaded[]
+     */
+    public function getEpisodeDownloads(): Collection
+    {
+        return $this->episodeDownloads;
+    }
+
+    public function addEpisodeDownload(EpisodeDownloaded $episodeDownload): self
+    {
+        if (!$this->episodeDownloads->contains($episodeDownload)) {
+            $this->episodeDownloads[] = $episodeDownload;
+            $episodeDownload->setEpisode($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEpisodeDownload(EpisodeDownloaded $episodeDownload): self
+    {
+        if ($this->episodeDownloads->contains($episodeDownload)) {
+            $this->episodeDownloads->removeElement($episodeDownload);
+            // set the owning side to null (unless already changed)
+            if ($episodeDownload->getEpisode() === $this) {
+                $episodeDownload->setEpisode(null);
+            }
+        }
 
         return $this;
     }

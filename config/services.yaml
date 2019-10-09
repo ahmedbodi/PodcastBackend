@@ -28,6 +28,11 @@ services:
     App\EventListener\ExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
+
+    App\EventListener\EpisodeDownloadedListener:
+        tags:
+            - { name: kernel.event_listener, event: episode.downloaded }
+
     Aws\S3\S3Client:
         arguments:
             -

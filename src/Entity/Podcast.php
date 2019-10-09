@@ -49,9 +49,15 @@ class Podcast
      */
     private $episodes;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\EpisodeDownloaded", mappedBy="podcast", orphanRemoval=true)
+     */
+    private $episodesDownloaded;
+
     public function __construct()
     {
         $this->episodes = new ArrayCollection();
+        $this->episodesDownloaded = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -96,6 +102,37 @@ class Podcast
             // set the owning side to null (unless already changed)
             if ($episode->getPodcast() === $this) {
                 $episode->setPodcast(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|EpisodeDownloaded[]
+     */
+    public function getEpisodesDownloaded(): Collection
+    {
+        return $this->episodesDownloaded;
+    }
+
+    public function addEpisodeDownloaded(EpisodeDownloaded $episodesDownloaded): self
+    {
+        if (!$this->episodesDownloaded->contains($episodesDownloaded)) {
+            $this->episodesDownloaded[] = $episodesDownloaded;
+            $episodesDownloaded->setPodcast($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEpisodeDownloaded(EpisodeDownloaded $episodesDownloaded): self
+    {
+        if ($this->episodesDownloaded->contains($episodesDownloaded)) {
+            $this->episodesDownloaded->removeElement($episodesDownloaded);
+            // set the owning side to null (unless already changed)
+            if ($episodesDownloaded->getPodcast() === $this) {
+                $episodesDownloaded->setPodcast(null);
             }
         }
 
