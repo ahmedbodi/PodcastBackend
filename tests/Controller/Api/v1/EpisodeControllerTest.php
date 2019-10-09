@@ -34,7 +34,7 @@ class EpisodeControllerTest extends JsonApiTestCase
         $data = [
             'title' => 'Minimal Episode',
             'episodeNumber' => 1,
-            'podcast' => 24,
+            'podcast' => 6,
         ];
 
         $this->client->request('POST', '/api/v1/episode/create', $data);
@@ -47,7 +47,7 @@ class EpisodeControllerTest extends JsonApiTestCase
         $data = [
             'title' => 'Full Episode',
             'episodeNumber' => 1,
-            'podcast' => 24,
+            'podcast' => 6,
             'description' => 'Full Episode Description',
             'downloadUrl' => 'https://localhost/episodes/full',
         ];
@@ -62,7 +62,7 @@ class EpisodeControllerTest extends JsonApiTestCase
         $data = [
             'title' => 'Full Episode',
             'episodeNumber' => 1,
-            'podcast' => 24,
+            'podcast' => 6,
             'description' => 'Full Episode Description',
             'downloadUrl' => 'https://localhost/episodes/full',
         ];
